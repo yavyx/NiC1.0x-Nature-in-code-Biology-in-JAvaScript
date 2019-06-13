@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<script>
+			
+			var N = 100;
+			var p = 0.5;
+			var simulations = 10000;
+			var fixations_of_mutant = 0;
+			var total_generations = 0;
+			
+			function next_generation()
+			{
+					var draws = 2 * N;
+					var a1 = 0;
+					var a2 = 0;
+					for (var i = 0; i < draws; i++)
+					{
+						if (Math.random() <= p) {a1++;}
+						else {a2++;}
+					}
+					p = a1 / draws
+			}
+			
+			function run_until_fixation()
+			{
+				p = 1 / (2 * N);
+				var generations = 0;
+				do
+				{
+					next_generation();
+					generations++;
+				} while (p > 0 && p < 1);
+				if (p == 1) 
+				{
+					fixations_of_mutant++;
+					total_generations += generations;
+				}
+			}
+			
+			for (var i = 0; i < simulations; i++)
+			{
+				run_until_fixation();
+			}
+			
+			console.log(total_generations / fixations_of_mutant);
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<script>
+			var flips = 20;
+			var simulations = 1000;
+
+			// Write your code after this line
+			var heads_count = 0;
+			var less_than_8_heads = 0;
+
+			for (var i = 0; i < simulations; i++) 
+			{    
+				for(var ii = 0; ii < flips; ii++)
+				{
+					if(Math.random() > 0.5) {heads_count++}
+				}
+				if(heads_count <= 8) {less_than_8_heads++}
+				heads_count = 0
+			}
+
+			console.log(less_than_8_heads / simulations);
+
+
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<script src="https://d3js.org/d3.v4.min.js"> </script>
+	</head>
+	<body>
+		<script> 
+			function draw_grid(data,colors) {
+				var width = 600;
+				var height = 600;
+				var grid_length = data.length;
+
+				var svg = d3.select('body').append('svg')
+					  .attr('width', width)
+					  .attr('height', height);
+
+				var rw = Math.floor(width/grid_length);
+				var rh = Math.floor(height/grid_length);
+
+				var g = svg.selectAll('g')
+						.data(data)
+						.enter()
+						.append('g')
+						.attr('transform', function (d, i) {
+						  return 'translate(0, ' + (width/grid_length) * i + ')';
+						});
+
+				g.selectAll('rect')
+						.data(function (d) {
+						  return d;
+						})
+						.enter()
+						.append('rect')
+						.attr('x', function (d, i) {
+						  return (width/grid_length) * i;
+						})
+						.attr('width', rw)
+						.attr('height', rh)
+						.attr('class',function(d) {
+						  return d;
+						});
+				if (!colors) {
+					d3.selectAll(".A1A1").style("fill","#fff");
+					d3.selectAll(".A1A2").style("fill","#2176c9");
+					d3.selectAll(".A2A2").style("fill","#042029");
+				}
+				else {
+					for (var i = 0; i < colors.length; i = i + 2) {
+						d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+					}
+				}
+			}
+
+			function update_grid(data,colors){
+				var grid_length = data.length;
+				d3.select('svg').selectAll('g')
+					.data(data)
+					.selectAll('rect')
+					.data(function (d) {
+					  return d;
+					})
+					.attr('class',function(d) {
+					  return d;
+					});
+				if (!colors) {
+					d3.selectAll(".A1A1").style("fill","#fff");
+					d3.selectAll(".A1A2").style("fill","#2176c9");
+					d3.selectAll(".A2A2").style("fill","#042029");
+				}
+				else {
+					for (var i = 0; i < colors.length; i = i + 2) {
+						d3.selectAll("."+colors[i]).style("fill",colors[i+1]);	
+					}
+				}
+			}
+			
+			var grid_length = 100;
+			var grid = [];
+			var temp_grid = [];
+			var number_of_simulations = 100;
+			var data = [];
+			
+			var beta = 0.05; 
+			var gamma = 0.15;
+			var rewiring_probablity = 0.01;
+			
+			function get_random_int(min, max)
+			{
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+			
+			function init_grid()
+			{
+				for (var i = 0; i < grid_length; i++)
+				{
+					grid[i] = [];
+					for (var ii = 0; ii < grid_length; ii++)
+					{
+						grid[i][ii] = "S";
+					}
+				}
+				grid[get_random_int(0, grid_length-1)][get_random_int(0, grid_length-1)] = "I";
+			}
+			
+			draw_grid(grid, ["S","#dcdcdc","I","#c82605","R","#6fc401"]);
+			
+			function run_time_step()
+			{
+				for (var i = 0; i < grid_length; i++)
+				{
+					temp_grid[i] = [];
+					for (var ii = 0; ii < grid_length; ii++)
+					{
+						temp_grid[i][ii] = grid[i][ii];
+					}
+				}
+				for (var i = 0; i < grid_length; i++)
+				{
+					for (var ii = 0; ii < grid_length; ii++)
+					{
+						if (grid[i][ii] == "I")
+						{
+							expose_neighbors(i, ii);
+							try_recovery(i , ii);
+						}
+					}
+				}
+				for (var i = 0; i < grid_length; i++)
+				{
+					for (var ii = 0; ii < grid_length; ii++)
+					{
+						grid[i][ii] = temp_grid[i][ii];
+					}
+				}
+			}
+			
+			function get_bounded_index(index)
+			{
+				var bounded_index = index;
+				if (index < 0) {bounded_index = index + grid_length;}
+				if (index >= grid_length) {bounded_index = index - grid_length;}
+				return bounded_index;
+			}
+			
+			function expose_neighbors(i, ii)
+			{
+				for (var n_i = i - 1; n_i <= i + 1; n_i++)
+				{
+					for (var n_ii = ii - 1; n_ii <= ii + 1; n_ii++)
+					{
+						if (n_i == i && n_ii == ii) 
+						{
+						continue;
+						}
+						if (Math.random() < rewiring_probablity)
+						{
+							var random_i = get_random_int(0, grid_length-1);
+							var random_ii = get_random_int(0, grid_length-1);
+							try_infection(random_i, random_ii);
+						}
+						else 
+						{
+						try_infection(get_bounded_index(n_i), get_bounded_index(n_ii));
+						}
+					}
+				}	
+			}
+			
+			function try_infection(i, ii)
+			{
+				if (grid[i][ii] == "S")
+				{
+					if (Math.random() < beta) {
+					temp_grid[i][ii] = "I";
+					}
+				}
+			}
+			
+			function try_recovery(i, ii)
+			{
+				if (grid[i][ii] == "I")
+				{
+					if (Math.random() < gamma) 
+					{
+					temp_grid[i][ii] = "R";
+					}
+				}
+			}
+			
+			function run_simulation()
+			{
+				init_grid();
+				while (get_number_of_infected() > 0)
+				{
+					run_time_step();
+				}
+			}
+			
+			function get_number_of_infected()
+			{
+				return get_number_in_state("I");
+			}
+			
+			function get_number_of_susceptible()
+			{
+				return get_number_in_state("S");
+			}
+			
+			function get_number_of_recovered()
+			{
+				return get_number_in_state("R");
+			}
+			
+			function get_number_in_state(state)
+			{
+				var number_in_state = 0;
+				for (var i = 0; i < grid_length; i++)
+				{
+					for (var ii = 0; ii < grid_length; ii++)
+					{
+						if (grid[i][ii] == state)
+						{
+							number_in_state++;
+						}
+					}
+				}
+				return number_in_state;
+			}
+			
+			
+			for (var i = 0; i < number_of_simulations; i++)
+			{
+				run_simulation();
+				data.push(get_number_of_recovered());
+			}
+		
+			function calculate_average_size(data)
+			{
+				var sum = 0;
+				for (var i = 0; i < data.length; i ++)
+				{
+					sum += data[i];
+				}
+				return sum / data.length;
+			}
+			
+			console.log(calculate_average_size(data));
+			
+			//function simulate_and_visualize()
+			//{
+			//	run_time_step();
+			//	update_grid(grid, ["S","#dcdcdc","I","#c82605","R","#6fc401"]);
+			//}
+			
+			//setInterval(simulate_and_visualize, 50);
+			
+		</script>
+	</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<script>
+
+		function make_child()
+		{
+			if (Math.random() <= 0.515) {return "boy";}
+			else {return "girl";}
+		}
+
+		function make_family()
+		{
+			for (var i = 0; i < number_of_children; i = i + 1)
+			{
+				family.push(make_child());
+			}
+			return family
+		}				
+		
+		function simulation()
+		{
+			for (var i = 0; i < number_of_simulations; i = i + 1)
+			{
+				families.push(make_family());
+				family = [];
+			}	
+		}
+		
+		function boys_in_children(family)
+		{
+			var boy_count = 0;
+			for (var i = 0; i < number_of_children; i = i + 1)
+			{
+				if (family[i] == "boy") {boy_count = boy_count + 1;}
+			}
+			return boy_count;
+		}
+	
+		function children_in_family(family)
+		{
+			if (boys_in_children(family) == 0) 
+			{
+				boy_family_counter[0] = boy_family_counter[0] + 1;
+				girl_family_counter[6] = girl_family_counter[6] + 1;
+			} 
+			else if (boys_in_children(family) == 1) 
+			{
+				boy_family_counter[1] = boy_family_counter[1] + 1;
+				girl_family_counter[5] = girl_family_counter[5] + 1;
+			}
+			else if (boys_in_children(family) == 2) 
+			{
+				boy_family_counter[2] = boy_family_counter[2] + 1;
+				girl_family_counter[4] = girl_family_counter[4] + 1;
+			}
+			else if (boys_in_children(family) == 3) 
+			{
+				boy_family_counter[3] = boy_family_counter[3] + 1;
+				girl_family_counter[3] = girl_family_counter[3] + 1;
+			}
+			else if (boys_in_children(family) == 4) 
+			{
+				boy_family_counter[4] = boy_family_counter[4] + 1;
+				girl_family_counter[2] = girl_family_counter[2] + 1;
+			}
+			else if (boys_in_children(family) == 5) 
+			{
+				boy_family_counter[5] = boy_family_counter[5] + 1;
+				girl_family_counter[1] = girl_family_counter[1] + 1;
+			}
+			else 
+			{
+				boy_family_counter[6] = boy_family_counter[6] + 1;
+				girl_family_counter[0] = girl_family_counter[0] + 1;
+			}
+		}
+		
+		function zeroes_array(array_len)
+		{
+			const arr = [];
+			let i = 0;
+			while (i < array_len) 
+			{
+				arr[i] = 0;
+				i++;
+			}
+			return arr;
+		}
+		
+		var number_of_children = 6
+		var number_of_simulations = 100000
+		var families = [];
+		var family = [];
+		var boy_family_counter = zeroes_array(7);
+		var girl_family_counter = zeroes_array(7);
+		
+		simulation();
+		
+		for (var i = 0; i < families.length; i = i + 1)
+		{
+			children_in_family(families[i]);
+		}
+		
+		console.log("Boys 0:", boy_family_counter[0] / families.length * 100, "%",
+					" 1:", boy_family_counter[1] / families.length * 100, "%",
+					" 2:", boy_family_counter[2] / families.length * 100, "%",
+					" 3:", boy_family_counter[3] / families.length * 100, "%",
+					" 4:", boy_family_counter[4] / families.length * 100, "%",	
+					" 5:", boy_family_counter[5] / families.length * 100, "%",
+					" 6:", boy_family_counter[6] / families.length * 100, "%")
+		
+		console.log("Girls 0:", girl_family_counter[0] / families.length * 100, "%",
+					" 1:", girl_family_counter[1] / families.length * 100, "%",
+					" 2:", girl_family_counter[2] / families.length * 100, "%",
+					" 3:", girl_family_counter[3] / families.length * 100, "%",
+					" 4:", girl_family_counter[4] / families.length * 100, "%",
+					" 5:", girl_family_counter[5] / families.length * 100, "%",
+					" 6:", girl_family_counter[6] / families.length * 100, "%")
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

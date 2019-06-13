@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<script>
+			var grid;
+			var grid_width  = 151;
+			var grid_height = 151;
+			var limit = 3;
+
+			// Create a new grid
+			function new_grid() {
+				var x;
+				var y;
+				grid = [];
+				for (x=0; x<grid_width; x = x + 1) {
+					grid[x] = [];
+					for (y=0; y<grid_height; y = y + 1) {
+						grid[x][y] = 0;
+					}
+				}
+				// Put a 1 in the center of the grid
+				x = Math.floor(grid_width  / 2);
+				y = Math.floor(grid_height / 2);
+				grid[x][y] = 1;
+			}
+
+			// Make sure a number is between 0 and max (max not included)
+			function limit_number(number, max) {
+				// If number is positive, return the
+				// remainder of its division by max
+				if (number >= 0) return number % max;
+
+				// If number is negative, return
+				// max minus the remainder of its negative divided by max
+				if (number <  0) return max -(-number % max);
+			}
+
+			// Loop through all cells in the grid
+			// and recalculate their value
+			function recalc_grid() {
+				var new_grid = [];
+				for (var x=0; x<grid_width; x = x + 1) {
+					new_grid[x] = [];
+					for (var y=0; y<grid_height; y = y + 1) {
+						new_grid[x][y] = value_at(x, y);
+					}
+				}
+				grid = new_grid;
+			}
+
+			// Count how many 1s we have in a 3x3 square around the cell
+			// Return 1 or 0 based on a simple check
+			function value_at(x, y) {
+				var res = 0;
+				for (var dx=-1; dx<=1; dx = dx + 1) {
+					for (var dy=-1; dy<=1; dy = dy + 1) {
+						var other_x = limit_number(x + dx, grid_width);
+						var other_y = limit_number(y + dy, grid_height);
+						res += grid[other_x][other_y];
+					}
+				}
+				return res > 0 && res < limit ? 1 : 0;
+			}
+			
+			function count_ones();
+			{
+				var counter = 0;
+				for (var i = 0; i < grid_width; i++)
+				{
+					for (var ii = 0; ii < grid_length; ii++)
+					{
+						if (grid[i][ii] == 1) {counter++;}
+					}
+				}
+				return counter;
+			}
+			
+			new_grid();
+			console.log(count_ones());
+			
+			for (var i = 0; i < 9; i++)
+			{
+				recalc_grid();
+				console.log(count_ones());
+			}
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

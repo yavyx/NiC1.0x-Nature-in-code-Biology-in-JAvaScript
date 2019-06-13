@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<script>
+			function ping()
+			{
+				console.log("ping");
+				if (Math.random() < 0.9)
+				{
+					pong_count = pong_count + 1;
+					pong();
+				}
+			}
+
+			function pong()
+			{
+				console.log("pong");
+				if (Math.random() < 0.9)
+				{
+					ping_count = ping_count + 1;
+					ping();
+				}
+			}
+
+			var ping_count = 1;
+			var pong_count = 0;
+			ping();
+			console.log("Played " + ping_count + " pings and " + pong_count + " pongs")
+			
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
